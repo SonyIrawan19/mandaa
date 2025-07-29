@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>I Love You Manda 💗</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: sans-serif;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+
+    camera.position.z = 30;
+
+    // Add floating texts
+    const loader = new THREE.FontLoader();
+    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+      for (let i = 0; i < 60; i++) {
+        const textGeo = new THREE.TextGeometry("I love you Manda 💗", {
+          font: font,
+          size: 1,
+          height: 0.2
+        });
+        const material = new THREE.MeshBasicMaterial({ color: 0xff66cc });
+        const textMesh = new THREE.Mesh(textGeo, material);
+
+        textMesh.position.set(
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 100
+        );
+
+        scene.add(textMesh);
+      }
+    });
+
+    // Floating hearts
+    let hearts = [];
+    const heartTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Red_Heart.svg/1200px-Red_Heart.svg.png');
+
+    for (let i = 0; i < 50; i++) {
+      let material = new THREE.SpriteMaterial({ map: heartTexture });
+      let sprite = new THREE.Sprite(material);
+      sprite.scale.set(2, 2, 1);
+      sprite.position.set(
+        (Math.random() - 0.5) * 60,
+        Math.random() * 50,
+        (Math.random() - 0.5) * 60
+      );
+      scene.add(sprite);
+      hearts.push(sprite);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+
+      hearts.forEach(heart => {
+        heart.position.y -= 0.1;
+        if (heart.position.y < -30) {
+          heart.position.y = 30;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
